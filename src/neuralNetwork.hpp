@@ -12,7 +12,7 @@ public:
     NeuralNetwork();
     ~NeuralNetwork();
     void initialize();
-    void add(Layer*, Activation*, Loss*);
+    void add(Layer*);
     std::vector<double> predict(std::vector<double>);
     void fit(std::vector<std::pair<std::vector<double>, std::vector<double>>>, int);
 private:

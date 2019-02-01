@@ -3,6 +3,22 @@
 #include <vector>
 #include <iterator>
 
+void NeuralNetwork::add(Layer* layer)
+{
+    layers.push_back(layer);
+}
+
+void NeuralNetwork::initialize()
+{
+    for (int i = 0; i < static_cast<int>(layers.size()); ++i) {
+        if (i == 0) {
+            layers[i]->initialize(inputSize);
+        } else {
+            layers[i]->initialize(layers[i-1]->getOutputSize());
+        }
+    }
+}
+
 void NeuralNetwork::step(double* input, double* output)
 {
     std::vector<double> values(input, input + inputSize);
