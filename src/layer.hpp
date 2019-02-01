@@ -16,6 +16,11 @@ public:
 
     double* next(double*);
     double* back(double*);
+    void gradientStep(double*);
+
+
+    int getInputSize();
+    int getOutputSize();
 private:
     // Neurons count
     int size;
@@ -36,9 +41,6 @@ private:
     Activation *activation;
 
     Loss *loss;
-
-    void gradientStep(double*);
-
 };
 
 #endif // LAYER_HPP

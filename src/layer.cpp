@@ -78,3 +78,13 @@ void Layer::gradientStep(double* output)
 
     }
 }
+
+int Layer::getInputSize()
+{
+    return inputSize;
+}
+
+int Layer::getOutputSize()
+{
+    return size;
+}
