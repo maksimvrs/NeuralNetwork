@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <iterator>
+//#include <iostream>
 
 NeuralNetwork::NeuralNetwork() {}
 
@@ -53,6 +54,7 @@ void NeuralNetwork::fit(std::vector<std::pair<std::vector<double>, std::vector<d
         input != data.end(); ++input) {
             step(input->first.data(), input->second.data());
         }
+//        std::cout << "Epoch: " << i << std::endl;
     }
 }
 

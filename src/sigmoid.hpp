@@ -5,8 +5,8 @@
 
 class Sigmoid : public Activation {
 public:
-    double function(double x);
-    double derivative(double x);
+    double function(double x) override;
+    double derivative(double x) override;
 };
 
 #endif // SIGMOID_HPP

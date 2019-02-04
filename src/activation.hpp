@@ -3,6 +3,7 @@
 
 class Activation {
 public:
+    virtual ~Activation() = default;
     virtual double function(double) = 0;
     virtual double derivative(double) = 0;
 };

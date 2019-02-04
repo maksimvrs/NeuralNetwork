@@ -5,10 +5,6 @@ Layer::Layer(int size, Activation *activation, Loss *loss)
     , activation(activation)
     , loss(loss)
 {
-    outputCache = new double[size];
-    inputCache = new double[size];
-    xCache = new double[inputSize];
-
 }
 
 Layer::~Layer()
@@ -24,10 +20,14 @@ Layer::~Layer()
     delete[] weights;
 }
 
-void Layer::initialize(int inputSize, bool isLast)
+void Layer::initialize(int inputSize, bool isOutputLayer)
 {
     this->inputSize = inputSize;
-    this->isLast = isLast;
+    this->isOutputLayer = isOutputLayer;
+
+    outputCache = new double[size];
+    inputCache = new double[size];
+    xCache = new double[inputSize];
 
     std::random_device random_device;
     std::mt19937 generator(random_device());
@@ -64,7 +64,7 @@ double* Layer::back(double* output)
     for (int inputIndex = 0; inputIndex < inputSize; ++inputIndex) {
         result[inputIndex] = 0;
         for (int outputIndex = 0; outputIndex < size; ++outputIndex) {
-            double value = isLast ? loss->derivative(outputCache[outputIndex], output[outputIndex]) :
+            double value = isOutputLayer ? loss->derivative(outputCache[outputIndex], output[outputIndex]) :
                 output[outputIndex] * activation->derivative(inputCache[outputIndex]);
             result[inputIndex] += value * weights[inputIndex][outputIndex];
             weights[inputIndex][outputIndex] += value * xCache[inputIndex] * -gradientStepValue;

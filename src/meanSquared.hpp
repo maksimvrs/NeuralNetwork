@@ -5,8 +5,8 @@
 
 class MeanSquared : public Loss {
 public:
-    double function(double, double);
-    double derivative(double, double);
+    double function(double, double) override;
+    double derivative(double, double) override;
 };
 
 #endif // MEAN_SQUARED_HPP

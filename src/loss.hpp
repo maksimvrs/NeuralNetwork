@@ -3,6 +3,7 @@
 
 class Loss {
 public:
+    virtual ~Loss() = default;
     virtual double function(double, double) = 0;
     virtual double derivative(double, double) = 0;
 };
