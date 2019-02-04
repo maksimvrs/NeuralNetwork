@@ -11,13 +11,12 @@ class NeuralNetwork {
 public:
     NeuralNetwork();
     ~NeuralNetwork();
-    void initialize();
+    void initialize(int);
     void add(Layer*);
     std::vector<double> predict(std::vector<double>);
     void fit(std::vector<std::pair<std::vector<double>, std::vector<double>>>, int);
 private:
     int inputSize;
-    int outputSize;
 
     std::vector<Layer*> layers;
 
