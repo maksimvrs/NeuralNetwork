@@ -2,68 +2,71 @@
 
 #include <vector>
 #include <iterator>
-//#include <iostream>
+#include <iostream>
 
-NeuralNetwork::NeuralNetwork() {}
+NeuralNetwork::NeuralNetwork()
+    : m_inputSize(0ul)
+    , m_loss(nullptr)
+{
+
+}
 
 NeuralNetwork::~NeuralNetwork()
 {
-    for (std::vector<Layer*>::iterator i = layers.begin(); i != layers.end(); ++i) {
-        delete *i;
+    for (auto &m_layer : m_layers) {
+        delete m_layer;
+    }
+    delete m_loss;
+}
+
+void NeuralNetwork::add(ILayer* layer)
+{
+    m_layers.push_back(layer);
+}
+
+void NeuralNetwork::initialize(unsigned long inputSize, ILoss* loss)
+{
+    m_inputSize = inputSize;
+    m_loss = loss;
+    for (std::vector<ILayer*>::const_iterator layer = m_layers.begin(); layer != m_layers.end(); ++layer) {
+        if (layer == m_layers.begin()) {
+            (*layer)->initialize(m_inputSize + 1, layer == m_layers.end() - 1);
+        } else (*layer)->initialize((*(layer - 1))->outputSize() + 1, layer == m_layers.end() - 1);
     }
 }
 
-void NeuralNetwork::add(Layer* layer)
+void NeuralNetwork::step(std::vector<double> input, std::vector<double> output)
 {
-    layers.push_back(layer);
+    for (std::vector<ILayer*>::const_iterator layer = m_layers.begin(); layer != m_layers.end(); ++layer) {
+        input = (*layer)->forward(input);
+    }
+
+    assert(input.size() == output.size());
+
+    std::transform(input.begin(), input.end(), output.begin(), output.begin(),
+            [=](double x, double y) {
+        return m_loss->derivative(x, y);
+    });
+
+    for (std::vector<ILayer*>::const_reverse_iterator layer = m_layers.rbegin(); layer != m_layers.rend(); ++layer) {
+        output = (*layer)->back(output);
+    }
 }
 
-void NeuralNetwork::initialize(int inputSize)
+void NeuralNetwork::fit(std::vector<std::pair<std::vector<double>, std::vector<double> > > train, unsigned long epochs)
 {
-    this->inputSize = inputSize;
-    for (int i = 0; i < static_cast<int>(layers.size()); ++i) {
-        if (i == 0) {
-            layers[i]->initialize(inputSize);
-        } else if (i == static_cast<int>(layers.size()) - 1) {
-            layers[i]->initialize(layers[i-1]->getOutputSize(), true);
-        } else {
-            layers[i]->initialize(layers[i-1]->getOutputSize());
+    for (size_t i = 0; i < epochs; ++i) {
+        for (auto &input : train) {
+            step(input.first, input.second);
         }
-    }
-}
-
-void NeuralNetwork::step(double* input, double* output)
-{
-    std::vector<double> values(input, input + inputSize);
-    double* result;
-    for (int i = 0; i < static_cast<int>(layers.size()); ++i) {
-        result = layers[i]->next(values.data());
-        values.assign(result, result + layers[i]->getOutputSize());
-    }
-    values.assign(output, output + layers.back()->getOutputSize());
-    for (int i = layers.size() - 1; i > 0; --i) {
-        result = layers[i]->back(values.data());
-        values.assign(result, result + layers[i]->getInputSize());
-    }
-}
-
-void NeuralNetwork::fit(std::vector<std::pair<std::vector<double>, std::vector<double>>> data, int epoch)
-{
-    for (int i = 0; i < epoch; ++i) {
-        for (std::vector<std::pair<std::vector<double>, std::vector<double>>>::iterator input = data.begin();
-        input != data.end(); ++input) {
-            step(input->first.data(), input->second.data());
-        }
-//        std::cout << "Epoch: " << i << std::endl;
+        std::cout << "Epoch: " << i << std::endl;
     }
 }
 
 std::vector<double> NeuralNetwork::predict(std::vector<double> input)
 {
-    double* result;
-    for (int i = 0; i < static_cast<int>(layers.size()); ++i) {
-        result = layers[i]->next(input.data());
-        input.assign(result, result + layers[i]->getOutputSize());
+    for (std::vector<ILayer*>::const_iterator layer = m_layers.begin(); layer != m_layers.end(); ++layer) {
+        input = (*layer)->forward(input);
     }
     return input;
 }

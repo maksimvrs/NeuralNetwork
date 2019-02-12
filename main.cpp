@@ -4,8 +4,8 @@
 #include <iomanip>
 
 #include "src/neuralNetwork.hpp"
-#include "src/meanSquared.hpp"
-#include "src/sigmoid.hpp"
+#include "src/loss/meanSquared.hpp"
+#include "src/activation/sigmoid.hpp"
 
 int main()
 {
@@ -35,16 +35,17 @@ int main()
     }
 
     NeuralNetwork network;
-    network.add(new Layer(2, new Sigmoid, new MeanSquared));
-    network.add(new Layer(2, new Sigmoid, new MeanSquared));
-    network.add(new Layer(1, new Sigmoid, new MeanSquared));
+    network.add(new DenseLayer(2, new Sigmoid));
+    network.add(new DenseLayer(2, new Sigmoid));
+    network.add(new DenseLayer(1, new Sigmoid));
 
-    network.initialize(2);
+    network.initialize(2, new MeanSquared);
 
-    network.fit(train, 32767);
+    network.fit(train, 10000);
 
 
     std::cout << "Write test data:" << std::endl;
+    lineX.erase();
     while (std::getline(std::cin, lineX)) {
         std::stringstream input(lineX);
         std::vector<double> vec;
@@ -53,8 +54,8 @@ int main()
             vec.push_back(value);
         }
         std::vector<double> predict = network.predict(vec);
-        for (std::vector<double>::iterator i = predict.begin(); i != predict.end(); ++i) {
-            std::cout <<  std::setprecision(6) << *i;
+        for (double &i : predict) {
+            std::cout << std::fixed << std::setprecision(6) << i;
         }
         std::cout << std::endl;
     }

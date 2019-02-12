@@ -5,22 +5,31 @@
 #include <algorithm>
 #include <iterator>
 
-#include "layer.hpp"
+#include "layer/DenseLayer.hpp"
+#include "IActivation.hpp"
+#include "IActivationFullConnection.hpp"
+
+#include "loss/meanSquared.hpp"
+#include "loss/crossEntropy.hpp"
+#include "activation/sigmoid.hpp"
+#include "activation/softMax.hpp"
 
 class NeuralNetwork {
 public:
     NeuralNetwork();
     ~NeuralNetwork();
-    void initialize(int);
-    void add(Layer*);
+    void initialize(unsigned long, ILoss*);
+    void add(ILayer*);
     std::vector<double> predict(std::vector<double>);
-    void fit(std::vector<std::pair<std::vector<double>, std::vector<double>>>, int);
+    void fit(std::vector<std::pair<std::vector<double>, std::vector<double> > >, unsigned long);
 private:
-    int inputSize;
+    unsigned long m_inputSize;
 
-    std::vector<Layer*> layers;
+    std::vector<ILayer*> m_layers;
 
-    void step(double*, double*);
+    ILoss* m_loss;
+
+    void step(std::vector<double>, std::vector<double>);
 };
 
 #endif // NEURAL_NETWORK_HPP

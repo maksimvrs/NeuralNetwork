@@ -6,14 +6,14 @@ set(CMAKE_CXX_STANDARD 14)
 include_directories(src)
 
 add_executable(NeuralNetwork
-        src/activation.hpp
-        src/layer.cpp
-        src/layer.hpp
-        src/loss.hpp
-        src/meanSquared.cpp
-        src/meanSquared.hpp
+        src/IActivation.hpp
+        src/layer/DenseLayer.cpp
+        src/layer/DenseLayer.hpp
+        src/ILoss.hpp
+        src/loss/meanSquared.cpp
+        src/loss/meanSquared.hpp
         src/neuralNetwork.cpp
         src/neuralNetwork.hpp
-        src/sigmoid.cpp
-        src/sigmoid.hpp
+        src/activation/sigmoid.cpp
+        src/activation/sigmoid.hpp
         main.cpp)
